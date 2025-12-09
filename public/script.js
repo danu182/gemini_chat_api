@@ -5,16 +5,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('user-input');
     const chatBox = document.getElementById('chat-box');
 
-    // Riwayat percakapan yang dikirim ke backend
     let conversationHistory = [];
+    const CHAT_API_ENDPOINT = '/api/chat';
 
     // --- Konstanta Pesan Error/Status ---
-    const THINKING_MESSAGE = 'typing...'; // Mengubah menjadi 'typing...' agar mirip WA
+    const THINKING_MESSAGE = 'typing...'; 
     const ERROR_SERVER = 'Failed to get response from server.';
     const ERROR_NO_RESULT = 'Sorry, no response received.';
 
     /**
-     * Menambahkan pesan ke chat box dan menangani scroll.
+     * Mengambil waktu lokal saat ini dalam format HH:MM.
+     */
+    const getCurrentTime = () => {
+        const now = new Date();
+        return now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    };
+
+    /**
+     * Menambahkan pesan ke chat box, termasuk waktu.
      */
     const addMessage = (sender, text, isThinking = false) => {
         const messageElement = document.createElement('div');
@@ -23,11 +31,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const textElement = document.createElement('p');
         textElement.textContent = text;
         
+        messageElement.appendChild(textElement);
+
         if (isThinking) {
             messageElement.setAttribute('data-status', 'thinking');
+        } else {
+            // Tambahkan elemen waktu (timestamp)
+            const timeElement = document.createElement('span');
+            timeElement.classList.add('message-time');
+            timeElement.textContent = getCurrentTime(); 
+            
+            messageElement.appendChild(timeElement);
         }
         
-        messageElement.appendChild(textElement);
         chatBox.appendChild(messageElement);
         chatBox.scrollTop = chatBox.scrollHeight;
         return messageElement;
@@ -40,6 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (element) {
             element.querySelector('p').textContent = newText;
             element.removeAttribute('data-status');
+            
+            // Tambahkan waktu saat pesan 'typing...' diganti
+            if (!isError) {
+                const timeElement = document.createElement('span');
+                timeElement.classList.add('message-time');
+                timeElement.textContent = getCurrentTime();
+                element.appendChild(timeElement);
+            }
+            
             if (isError) {
                 element.classList.add('error-message');
             }
@@ -58,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         userInput.disabled = true;
         chatForm.querySelector('button[type="submit"]').disabled = true;
 
-        // 1. Tambahkan pesan pengguna ke chat box & history
+        // 1. Tambahkan pesan pengguna
         addMessage('user', userMessage);
         conversationHistory.push({ role: 'user', text: userMessage });
         userInput.value = '';
@@ -67,8 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const thinkingMessageElement = addMessage('bot', THINKING_MESSAGE, true);
 
         try {
-            // 3. Kirim permintaan POST ke backend
-            const response = await fetch('/api/chat', {
+            // 3. Kirim permintaan POST
+            const response = await fetch(CHAT_API_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -79,9 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentThinkingElement = document.querySelector('[data-status="thinking"]');
 
             if (!response.ok) {
-                // Jika status HTTP adalah 4xx atau 5xx
+                // Hapus pesan user dari history karena server gagal merespons
+                conversationHistory.pop(); 
                 updateMessage(currentThinkingElement, ERROR_SERVER, true);
-                conversationHistory.pop(); // Hapus pesan user dari history
                 return;
             }
 
@@ -91,19 +116,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data && data.result) {
                 const aiResponse = data.result.trim();
                 updateMessage(currentThinkingElement, aiResponse);
-                
-                // Tambahkan respons AI ke history dengan role 'model'
                 conversationHistory.push({ role: 'model', text: aiResponse });
             } else {
-                updateMessage(currentThinkingElement, ERROR_NO_RESULT, true);
+                // Jika respons 200 OK tapi tidak ada hasil
                 conversationHistory.pop();
+                updateMessage(currentThinkingElement, ERROR_NO_RESULT, true);
             }
 
         } catch (error) {
+            // Error jaringan (misal server mati)
             console.error('Network or Fetch Error:', error);
             const currentThinkingElement = document.querySelector('[data-status="thinking"]');
-            updateMessage(currentThinkingElement, ERROR_SERVER, true);
             conversationHistory.pop();
+            updateMessage(currentThinkingElement, ERROR_SERVER, true);
             
         } finally {
             // Aktifkan kembali input dan tombol
@@ -113,6 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Optional: Pesan selamat datang
+    // Pesan selamat datang (ini TIDAK dimasukkan ke conversationHistory)
     addMessage('bot', 'Halo! Saya adalah Gemini Chatbot. Ketik pesan Anda untuk memulai.');
 });
