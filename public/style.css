@@ -1,17 +1,18 @@
 /* style.css */
 
-/* --- GENERAL & LAYOUT (Telegram Style) --- */
+/* --- GENERAL & LAYOUT (Minimalist Style) --- */
 :root {
-    --telegram-blue: #517DA2; /* Warna header Telegram */
-    --telegram-bg: #EAEAEA; /* Latar belakang chat terang */
+    --primary-color: #007BFF; /* Biru Profesional */
+    --secondary-color: #F8F9FA; /* Latar Belakang Chat */
     --msg-incoming: #FFFFFF;
-    --msg-outgoing: #C6E3FF; /* Biru muda untuk pesan keluar */
-    --text-dark: #1F2327;
+    --msg-outgoing: #E0F7FA; /* Aqua/Biru sangat muda */
+    --text-dark: #343a40; /* Teks abu-abu gelap */
+    --shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #F6F6F6;
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #F4F6F8;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -21,56 +22,53 @@ body {
 
 .chat-app {
     width: 100%;
-    max-width: 450px; 
-    height: 90vh; 
+    max-width: 500px; 
+    height: 85vh; 
     background-color: var(--msg-incoming);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
-    border-radius: 8px;
+    border-radius: 16px; /* Sudut lebih melengkung */
     overflow: hidden;
+    transition: all 0.3s ease;
 }
 
 /* --- HEADER --- */
 .chat-header {
-    background-color: var(--telegram-blue);
-    padding: 10px 15px;
+    background-color: var(--primary-color);
+    padding: 15px 20px;
     color: white;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .profile {
     display: flex;
     align-items: center;
-    flex-grow: 1;
-}
-
-.back-button {
-    margin-right: 10px;
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
-    background-color: #79a1cf; 
+    width: 45px;
+    height: 45px;
+    background-color: #FFFFFF;
+    color: var(--primary-color);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-right: 10px;
+    font-size: 1.5em;
+    margin-right: 12px;
 }
 
 .info h2 {
     margin: 0;
-    font-size: 1.1em;
+    font-size: 1.2em;
     font-weight: 500;
 }
 
 .info p {
-    margin: 0;
+    margin: 2px 0 0;
     font-size: 0.8em;
     opacity: 0.8;
 }
@@ -78,54 +76,54 @@ body {
 /* --- CHAT BOX --- */
 .chat-box {
     flex-grow: 1;
-    padding: 10px 15px;
+    padding: 20px;
     overflow-y: auto;
-    background-color: var(--telegram-bg); 
+    background-color: var(--secondary-color); /* Latar belakang abu-abu sangat muda */
 }
 
 /* --- MESSAGE STYLES --- */
 .message {
-    max-width: 80%;
-    margin-bottom: 5px;
-    /* Penambahan padding bawah untuk menampung waktu */
-    padding: 8px 12px 20px 12px; 
-    border-radius: 10px;
+    max-width: 85%;
+    margin-bottom: 10px;
+    padding: 10px 15px 22px 15px; 
+    border-radius: 18px; /* Sudut sangat melengkung */
     line-height: 1.4;
     font-size: 0.95em;
     position: relative; 
-    box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Shadow halus */
+    transition: background-color 0.2s;
 }
 
-/* Pesan Pengguna (Outgoing - Biru muda) */
+/* Pesan Pengguna (Outgoing - Biru sangat muda) */
 .user-message {
     background-color: var(--msg-outgoing);
     color: var(--text-dark);
     margin-left: auto;
-    border-bottom-right-radius: 2px; 
+    border-bottom-right-radius: 5px; /* Sudut sedikit siku */
 }
 
-/* Pesan Bot (Incoming - Putih) */
+/* Pesan Bot (Incoming - Putih bersih) */
 .bot-message {
     background-color: var(--msg-incoming);
     color: var(--text-dark);
     margin-right: auto;
-    border-bottom-left-radius: 2px; 
+    border-bottom-left-radius: 5px; /* Sudut sedikit siku */
 }
 
 /* --- TIMESTAMP / JAM CHAT --- */
 .message-time {
     position: absolute;
     bottom: 5px;
-    right: 10px;
+    right: 12px;
     font-size: 0.7em; 
-    color: rgba(0, 0, 0, 0.45); 
+    color: rgba(0, 0, 0, 0.4); 
     line-height: 1;
 }
 
 /* Gaya Pesan Error/Thinking */
 .bot-message[data-status="thinking"], .bot-message.error-message {
-    background-color: #FFE5E5; 
-    color: #A30000;
+    background-color: #fff3f3; 
+    color: #cc0000;
     font-style: italic;
     font-size: 0.9em;
 }
@@ -133,42 +131,48 @@ body {
 /* --- INPUT AREA --- */
 .chat-input-area {
     display: flex;
-    padding: 8px 10px;
-    background-color: #F9F9F9;
-    border-top: 1px solid #E0E0E0;
+    padding: 15px 20px;
+    background-color: #FFFFFF;
+    border-top: 1px solid #E9ECEF;
 }
 
 #user-input {
     flex-grow: 1;
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
+    padding: 12px 18px;
+    border: 1px solid #ced4da;
+    border-radius: 25px; /* Penuh melengkung */
     font-size: 1em;
-    margin-right: 8px;
+    margin-right: 10px;
+    transition: border-color 0.3s;
 }
 
 #user-input:focus {
     outline: none;
-    border-color: var(--telegram-blue);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .send-button {
-    background-color: var(--telegram-blue);
+    background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 50%;
-    width: 45px;
-    height: 45px;
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.1s;
     flex-shrink: 0;
 }
 
 .send-button:hover:not(:disabled) {
-    background-color: #436a90;
+    background-color: #0056b3;
+}
+
+.send-button:active {
+    transform: scale(0.95);
 }
 
 .send-button:disabled {
@@ -177,7 +181,7 @@ body {
 }
 
 /* Responsive dasar */
-@media (max-width: 500px) {
+@media (max-width: 550px) {
     .chat-app {
         height: 100vh;
         border-radius: 0;
